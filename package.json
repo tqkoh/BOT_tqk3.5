@@ -1,0 +1,14 @@
+{
+  "name": "bot-tqk3-5",
+  "version": "0.0.0",
+  "private": true,
+  "author": "tqkoh <shktmygs@gmail.com>",
+  "description": "bot imitating tqk using chatgpt",
+  "dependencies": {
+    "hubot": "^3.3.2",
+    "hubot-traq": "^1.8.1"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
