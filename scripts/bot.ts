@@ -1,16 +1,13 @@
-// // traQのAPIを使いたい場合
-// import { Apis } from "@traptitech/traq";
+// traQのAPIを使いたい場合
+import { Apis, Configuration } from "@traptitech/traq";
 
 const INTERVAL = 1 * 60 * 60 * 1000; // 1h
 
 // ShowcaseにHUBOT_TRAQ_ACCESS_TOKENという名前で保存した環境変数を取得する
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
-if (!TOKEN) {
-  throw new Error("HUBOT_TRAQ_ACCESS_TOKEN is not defined");
-}
-// const api = new Apis({
-//   accessToken: TOKEN,
-// }); // api.hoge()でtraQのAPIが使える
+const api = new Apis({
+  accessToken: TOKEN,
+} as Configuration); // api.hoge()でtraQのAPIが使える
 
 module.exports = (robot) => {
   // メンション付きで正規表現にマッチするメッセージが送られてきたときに反応
@@ -34,7 +31,7 @@ module.exports = (robot) => {
     if (user.id === "tqk") {
       setInterval(() => {
         res.send("bu2");
-      }, INTERVAL)
+      }, INTERVAL);
     }
   });
 };
