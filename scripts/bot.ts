@@ -20,7 +20,7 @@ const TQK_NAME = "tqk";
 const TQK_DUMMY = "mastqk";
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
 const PROMPT_URL = process.env.PROMPT_URL;
-const TWEET_MINUTE = "20";
+const TWEET_MINUTE = "0,30";
 
 const traQConfiguration = new TraQConfiguration({
   accessToken: TOKEN,
