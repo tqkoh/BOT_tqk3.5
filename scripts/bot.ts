@@ -75,7 +75,7 @@ function talk(
                   ? "assistant"
                   : "user",
               content: channelMessages.data[i].content
-                .replace(/!\{.*?\}/g, "@")
+                .replace(/!\{.*?\}/g, "")
                 .slice(0, MAX_CHANNEL_MESSAGE_LENGTH),
             });
           }
@@ -141,7 +141,13 @@ function talk(
                       messageRes.send(replies[i]);
                     }
                   } else if (robot !== null) {
-                    robot.send({ channelID: HOME_CHANNEL_ID }, replies[i]);
+                    robot.send(
+                      {
+                        channelID:
+                          messageRes.message.channelID || HOME_CHANNEL_ID,
+                      },
+                      replies[i]
+                    );
                   }
                 }, TYPING_INTERVAL * i);
               }
@@ -149,6 +155,29 @@ function talk(
         });
     });
 }
+
+// pool.getConnection().then((conn) => {
+//   const query = "SELECT * FROM `channels`";
+//   conn.query<Channel[]>(query).then((rows) => {
+//     console.log("channels");
+//     rows.forEach((c) => {
+//       console.log(c.channel_id);
+//       if (Math.random() < 1) {
+//         const tweetTime = (Math.random() * TWEET_RANDOM) / 60 / 60;
+//         console.log(
+//           "" +
+//             Math.floor(tweetTime / 60 / 1000) +
+//             " 分後に " +
+//             c.channel_id +
+//             " でツイートする"
+//         );
+//         setTimeout(() => {
+//           console.log("tweet");
+//         }, tweetTime);
+//       }
+//     });
+//   });
+// });
 
 // talk(false);
 
@@ -177,13 +206,21 @@ module.exports = (robot) => {
         rows.forEach((c) => {
           console.log(c.channel_id);
           if (Math.random() < TWEET_PROBABILITY) {
+            const tweetTime = Math.random() * TWEET_RANDOM;
+            console.log(
+              "" +
+                Math.floor(tweetTime / 60 / 1000) +
+                " 分後に " +
+                c.channel_id +
+                " でツイートする"
+            );
             setTimeout(() => {
               talk(false, "", robot, {
                 message: { channelID: c.channel_id },
                 reply: null,
                 send: null,
               });
-            }, Math.random() * TWEET_RANDOM);
+            }, tweetTime);
           }
         });
       });
