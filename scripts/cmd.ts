@@ -51,7 +51,7 @@ module.exports = (robot) => {
   });
   robot.respond(/(たすけて|help)$/i, async (res) => {
     const { message } = res.message;
-    const { channelId, user, id } = message;
+    const { user } = message;
     if (user.bot) return;
     res.reply(readme);
   });
