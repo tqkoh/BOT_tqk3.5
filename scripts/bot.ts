@@ -6,7 +6,7 @@ import {
   OpenAIApi,
   Configuration as OpenAIConfiguration,
 } from "openai";
-import { pool } from "./db";
+import { Channel, pool } from "./db";
 
 const TYPING_INTERVAL = 3000;
 const MAX_REPLIES = 3;
@@ -183,15 +183,6 @@ function talk(
 
 const cron = require("node-cron");
 
-interface Channel {
-  id: string;
-  channel_id: string;
-}
-
-interface GetChannelsResponse {
-  channels: Channel[];
-}
-
 module.exports = (robot) => {
   // 起動時
   robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
@@ -205,7 +196,7 @@ module.exports = (robot) => {
         console.log("channels");
         rows.forEach((c) => {
           console.log(c.channel_id);
-          if (Math.random() < TWEET_PROBABILITY) {
+          if (Math.random() < 1.0 / c.frequency) {
             const tweetTime = Math.random() * TWEET_RANDOM;
             console.log(
               "" +
@@ -234,7 +225,8 @@ module.exports = (robot) => {
     if (
       /(おいす[ー～]?|\/?join)$/i.test(plainText) ||
       /\/?leave$/i.test(plainText) ||
-      /(たすけて|help)$/i.test(plainText)
+      /(たすけて|help)$/i.test(plainText) ||
+      /\/?freq$/i.test(plainText)
     ) {
       return;
     }
