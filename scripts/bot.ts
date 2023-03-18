@@ -1,7 +1,6 @@
 // traQのAPIを使いたい場合
 import { Apis, Configuration as TraQConfiguration } from "@traptitech/traq";
 import axios from "axios";
-import CronJob from "cron";
 import {
   ChatCompletionRequestMessage,
   OpenAIApi,
@@ -65,10 +64,9 @@ function talk(
               channelMessages.data[i].userId === BOT_USER_ID
                 ? "assistant"
                 : "user",
-            content: channelMessages.data[i].content.slice(
-              0,
-              MAX_CHANNEL_MESSAGE_LENGTH
-            ),
+            content: channelMessages.data[i].content
+              .replace(/!\{.*?\}/g, "@")
+              .slice(0, MAX_CHANNEL_MESSAGE_LENGTH),
           });
         }
 
@@ -148,16 +146,18 @@ function talk(
 
 // talk(false);
 
+const cron = require("node-cron");
+
 module.exports = (robot) => {
   // 起動時
   robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("aasd");
 
-  new CronJob("0 */1 * * *", () => {
+  cron.schedule("0 */1 * * *", () => {
     if (Math.random() < 0.2) {
       talk(false, "", robot);
     }
-  }).start();
+  });
 
   robot.respond(/.*/, (res) => {
     const { message } = res.message;
