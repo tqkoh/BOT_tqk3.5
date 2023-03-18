@@ -20,6 +20,7 @@ const TQK_NAME = "tqk";
 const TQK_DUMMY = "mastqk";
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
 const PROMPT_URL = process.env.PROMPT_URL;
+const TWEET_MINUTE = "20";
 
 const traQConfiguration = new TraQConfiguration({
   accessToken: TOKEN,
@@ -118,7 +119,7 @@ function talk(
             })
             .then((completion) => {
               console.log("completion");
-              let replies = completion.data.choices[0].message.content
+              let replies: string[] = completion.data.choices[0].message.content
                 .split("\n")
                 .reduce((acc, c) => {
                   if (c !== "") {
@@ -132,19 +133,12 @@ function talk(
                   console.log(replies[i]);
                   if (messageRes.reply !== null && messageRes.send !== null) {
                     if (i === 0) {
-                      messageRes.reply(
-                        completion.data.choices[0].message.content
-                      );
+                      messageRes.reply(replies[i]);
                     } else {
-                      messageRes.send(
-                        completion.data.choices[0].message.content
-                      );
+                      messageRes.send(replies[i]);
                     }
                   } else if (robot !== null) {
-                    robot.send(
-                      { channelID: HOME_CHANNEL_ID },
-                      completion.data.choices[0].message.content
-                    );
+                    robot.send({ channelID: HOME_CHANNEL_ID }, replies[i]);
                   }
                 }, TYPING_INTERVAL * i);
               }
@@ -162,7 +156,7 @@ module.exports = (robot) => {
   // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
-  cron.schedule("10 */1 * * *", () => {
+  cron.schedule(TWEET_MINUTE + " */1 * * *", () => {
     if (Math.random() < TWEET_PROBABILITY) {
       talk(false, "", robot);
     }
