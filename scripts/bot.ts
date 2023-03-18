@@ -11,6 +11,7 @@ const TYPING_INTERVAL = 3000;
 const MAX_REPLIES = 3;
 const CONTEXT_LENGTH = 2;
 const MAX_CHANNEL_MESSAGE_LENGTH = 50;
+const TWEET_PROBABILITY = 1.0; // 0.2
 
 // ShowcaseにHUBOT_TRAQ_ACCESS_TOKENという名前で保存した環境変数を取得する
 const BOT_USER_ID = "8996bb1d-31c6-472c-a99f-ee06e3728fe2";
@@ -52,10 +53,13 @@ function talk(
     send: (_) => {},
   }
 ) {
+  console.log("talk");
   axios
     .get<GetPromptResponse>(PROMPT_URL, { withCredentials: true })
     .then((res) => {
+      console.log("prompt");
       traq.getMessages(messageRes.message.channelID).then((channelMessages) => {
+        console.log("context");
         // context を入れる
         const n = channelMessages.data.length;
         for (let i = CONTEXT_LENGTH; i > 0; i--) {
@@ -111,6 +115,7 @@ function talk(
             // max_tokens: 80,
           })
           .then((completion) => {
+            console.log("completion");
             let replies = completion.data.choices[0].message.content
               .split("\n")
               .reduce((acc, c) => {
@@ -150,16 +155,17 @@ const cron = require("node-cron");
 
 module.exports = (robot) => {
   // 起動時
-  robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
-  console.log("aasd");
+  // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
+  console.log("ご");
 
   cron.schedule("0 */1 * * *", () => {
-    if (Math.random() < 0.2) {
+    if (Math.random() < TWEET_PROBABILITY) {
       talk(false, "", robot);
     }
   });
 
   robot.respond(/.*/, (res) => {
+    console.log("respond");
     const { message } = res.message;
     const { plainText, user } = message;
     if (
