@@ -6,7 +6,8 @@
   "description": "bot imitating tqk using chatgpt",
   "dependencies": {
     "hubot": "^3.3.2",
-    "hubot-traq": "^1.8.1"
+    "hubot-traq": "^1.8.1",
+    "openai": "^3.2.1"
   },
   "engines": {
     "node": "0.10.x"
