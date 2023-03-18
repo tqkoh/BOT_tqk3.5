@@ -1,7 +1,7 @@
 // traQのAPIを使いたい場合
 import { Apis, Configuration as TraQConfiguration } from "@traptitech/traq";
-import axios from "axios";
 import { readFileSync } from "fs";
+import { pool } from "./db";
 
 const BOT_ID = process.env.HUBOT_TRAQ_BOT_ID;
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
@@ -15,16 +15,14 @@ const traq = new Apis(traQConfiguration); // api.hoge()でtraQのAPIが使える
 
 const readme = readFileSync("readme.md", "utf-8");
 
-// axios
-//   .delete(
-//     CHANNELS_URL + "api/channels/" + "8c8172ca-8f7d-4204-b252-4e1e9b6f236b"
-//   )
-//   .then((_) => {
+// const debugChannelId = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
+// pool.getConnection().then((conn) => {
+//   const query = "DELETE FROM channels WHERE channel_id = ?";
+//   conn.query(query, [debugChannelId]).then((_) => {
 //     console.log("kan");
-//   })
-//   .catch((e) => {
-//     console.log(e);
 //   });
+//   conn.release();
+// });
 
 module.exports = (robot) => {
   robot.respond(/(おいす[ー～]?|\/?join)$/i, async (res) => {
@@ -36,11 +34,14 @@ module.exports = (robot) => {
     }
 
     res.send({ type: "stamp", name: "loading" });
-    axios.post(CHANNELS_URL + "api/channels/" + channelId).then((_) => {
-      res.send({ type: "stamp", name: "kan" });
-      setTimeout(() => {
-        res.reply("おいす");
-      }, REPLY_DELAY);
+    pool.getConnection().then((conn) => {
+      const query = "INSERT INTO channels (channel_id) VALUES (?)";
+      conn.query(query, [channelId]).then((_) => {
+        res.send({ type: "stamp", name: "kan" });
+        setTimeout(() => {
+          res.reply("おいす");
+        }, REPLY_DELAY);
+      });
     });
   });
   robot.respond(/\/?leave$/i, async (res) => {
@@ -48,11 +49,14 @@ module.exports = (robot) => {
     const { channelId } = message;
 
     res.send({ type: "stamp", name: "loading" });
-    axios.delete(CHANNELS_URL + "api/channels/" + channelId).then((_) => {
-      res.send({ type: "stamp", name: "kan" });
-      setTimeout(() => {
-        res.reply(":wave:");
-      }, REPLY_DELAY);
+    pool.getConnection().then((conn) => {
+      const query = "DELETE FROM channels WHERE channel_id = ?";
+      conn.query(query, [channelId]).then((_) => {
+        res.send({ type: "stamp", name: "kan" });
+        setTimeout(() => {
+          res.reply(":wave:");
+        }, REPLY_DELAY);
+      });
     });
   });
   robot.respond(/(たすけて|help)$/i, async (res) => {

@@ -6,6 +6,7 @@ import {
   OpenAIApi,
   Configuration as OpenAIConfiguration,
 } from "openai";
+import { pool } from "./db";
 
 const TYPING_INTERVAL = 3000;
 const MAX_REPLIES = 3;
@@ -164,18 +165,16 @@ interface GetChannelsResponse {
 
 module.exports = (robot) => {
   // 起動時
-  // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
+  robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
   cron.schedule(TWEET_MINUTE + " */1 * * *", () => {
     console.log("schedule");
-    axios
-      .get<GetChannelsResponse>(CHANNELS_URL + "api/channels", {
-        withCredentials: true,
-      })
-      .then((res) => {
+    pool.getConnection().then((conn) => {
+      const query = "SELECT * FROM `channels`";
+      conn.query<GetChannelsResponse>(query).then((rows) => {
         console.log("channels");
-        res.data.channels.forEach((c) => {
+        rows.channels.forEach((c) => {
           console.log(c.channelId);
           if (Math.random() < TWEET_PROBABILITY) {
             setInterval(() => {
@@ -188,6 +187,7 @@ module.exports = (robot) => {
           }
         });
       });
+    });
   });
 
   robot.respond(/.*/, (res) => {

@@ -5,3 +5,4 @@ startup: |
   npx tsc
 entrypoint: exec node_modules/.bin/hubot -a traq -n "$HUBOT_TRAQ_NAME" "$@"
 http_proxy: 8080
+use_mariadb: true
