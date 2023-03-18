@@ -49,8 +49,8 @@ function talk(
   robot = null,
   messageRes = {
     message: { channelID: HOME_CHANNEL_ID },
-    reply: (_) => {},
-    send: (_) => {},
+    reply: null,
+    send: null,
   }
 ) {
   console.log("talk");
@@ -58,94 +58,98 @@ function talk(
     .get<GetPromptResponse>(PROMPT_URL, { withCredentials: true })
     .then((res) => {
       console.log("prompt");
-      traq.getMessages(messageRes.message.channelID).then((channelMessages) => {
-        console.log("context");
-        // context を入れる
-        const n = channelMessages.data.length;
-        for (let i = CONTEXT_LENGTH; i > 0; i--) {
-          res.data.prompt.push({
-            role:
-              channelMessages.data[i].userId === BOT_USER_ID
-                ? "assistant"
-                : "user",
-            content: channelMessages.data[i].content
-              .replace(/!\{.*?\}/g, "@")
-              .slice(0, MAX_CHANNEL_MESSAGE_LENGTH),
-          });
-        }
-
-        // 最後の文章を format
-        const now = new Date();
-        const timeString = `${
-          ["日", "月", "火", "水", "木", "金", "土"][now.getDay()]
-        }曜日の ${String(now.getHours()).padStart(2, "0")}:${String(
-          now.getMinutes()
-        ).padStart(2, "0")}`;
-        // "日曜日の 00:00"
-        res.data.lastMessage.content = res.data.lastMessage.content
-          .replace(/\{% time %\}/, timeString)
-          .replace(
-            /\{% text %\}/,
-            mention ? plainText : res.data.tweetQuestion
-          );
-        res.data.prompt.push(res.data.lastMessage);
-
-        let messages: ChatCompletionRequestMessage[] = res.data.prompt.map(
-          (m) => {
-            const role =
-              m.role === "user"
-                ? "user"
-                : m.role === "assistant"
-                ? "assistant"
-                : "system";
-            return {
-              role: role,
-              content: m.content,
-            };
+      traq
+        .getMessages(messageRes.message.channelID || HOME_CHANNEL_ID)
+        .then((channelMessages) => {
+          console.log("context");
+          // context を入れる
+          const n = channelMessages.data.length;
+          for (let i = CONTEXT_LENGTH; i > 0; i--) {
+            res.data.prompt.push({
+              role:
+                channelMessages.data[i].userId === BOT_USER_ID
+                  ? "assistant"
+                  : "user",
+              content: channelMessages.data[i].content
+                .replace(/!\{.*?\}/g, "@")
+                .slice(0, MAX_CHANNEL_MESSAGE_LENGTH),
+            });
           }
-        );
-        for (let i = messages.length - 3; i < messages.length; i++) {
-          console.log(messages[i].content);
-        }
 
-        openai
-          .createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: messages,
-            // max_tokens: 80,
-          })
-          .then((completion) => {
-            console.log("completion");
-            let replies = completion.data.choices[0].message.content
-              .split("\n")
-              .reduce((acc, c) => {
-                if (c !== "") {
-                  acc.push(c.replace(TQK_DUMMY, TQK_NAME));
-                }
-                return acc;
-              }, []);
+          // 最後の文章を format
+          const now = new Date();
+          const timeString = `${
+            ["日", "月", "火", "水", "木", "金", "土"][now.getDay()]
+          }曜日の ${String(now.getHours()).padStart(2, "0")}:${String(
+            now.getMinutes()
+          ).padStart(2, "0")}`;
+          // "日曜日の 00:00"
+          res.data.lastMessage.content = res.data.lastMessage.content
+            .replace(/\{% time %\}/, timeString)
+            .replace(
+              /\{% text %\}/,
+              mention ? plainText : res.data.tweetQuestion
+            );
+          res.data.prompt.push(res.data.lastMessage);
 
-            for (let i = 0; i < Math.min(replies.length, MAX_REPLIES); i++) {
-              setTimeout(() => {
-                console.log(replies[i]);
-                if (messageRes !== null) {
-                  if (i === 0) {
-                    messageRes.reply(
+          let messages: ChatCompletionRequestMessage[] = res.data.prompt.map(
+            (m) => {
+              const role =
+                m.role === "user"
+                  ? "user"
+                  : m.role === "assistant"
+                  ? "assistant"
+                  : "system";
+              return {
+                role: role,
+                content: m.content,
+              };
+            }
+          );
+          for (let i = messages.length - 3; i < messages.length; i++) {
+            console.log(messages[i].content);
+          }
+
+          openai
+            .createChatCompletion({
+              model: "gpt-3.5-turbo",
+              messages: messages,
+              // max_tokens: 80,
+            })
+            .then((completion) => {
+              console.log("completion");
+              let replies = completion.data.choices[0].message.content
+                .split("\n")
+                .reduce((acc, c) => {
+                  if (c !== "") {
+                    acc.push(c.replace(TQK_DUMMY, TQK_NAME));
+                  }
+                  return acc;
+                }, []);
+
+              for (let i = 0; i < Math.min(replies.length, MAX_REPLIES); i++) {
+                setTimeout(() => {
+                  console.log(replies[i]);
+                  if (messageRes.reply !== null && messageRes.send !== null) {
+                    if (i === 0) {
+                      messageRes.reply(
+                        completion.data.choices[0].message.content
+                      );
+                    } else {
+                      messageRes.send(
+                        completion.data.choices[0].message.content
+                      );
+                    }
+                  } else if (robot !== null) {
+                    robot.send(
+                      { channelID: HOME_CHANNEL_ID },
                       completion.data.choices[0].message.content
                     );
-                  } else {
-                    messageRes.send(completion.data.choices[0].message.content);
                   }
-                } else if (robot !== null) {
-                  robot.send(
-                    { channelID: HOME_CHANNEL_ID },
-                    completion.data.choices[0].message.content
-                  );
-                }
-              }, TYPING_INTERVAL * i);
-            }
-          });
-      });
+                }, TYPING_INTERVAL * i);
+              }
+            });
+        });
     });
 }
 
@@ -158,7 +162,7 @@ module.exports = (robot) => {
   // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
-  cron.schedule("0 */1 * * *", () => {
+  cron.schedule("10 */1 * * *", () => {
     if (Math.random() < TWEET_PROBABILITY) {
       talk(false, "", robot);
     }
