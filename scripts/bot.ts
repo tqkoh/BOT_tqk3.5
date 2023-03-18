@@ -82,6 +82,7 @@ function talk(
 
           // 最後の文章を format
           const now = new Date();
+          now.setHours(now.getHours() + 9);
           const timeString = `${
             ["日", "月", "火", "水", "木", "金", "土"][now.getDay()]
           }曜日の ${String(now.getHours()).padStart(2, "0")}:${String(
