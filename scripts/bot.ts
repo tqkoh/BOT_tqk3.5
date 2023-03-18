@@ -20,7 +20,9 @@ const TQK_NAME = "tqk";
 const TQK_DUMMY = "mastqk";
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
 const PROMPT_URL = process.env.PROMPT_URL;
-const TWEET_MINUTE = "0,30";
+const CHANNELS_URL = process.env.CHANNELS_URL;
+const TWEET_MINUTE = "0";
+const TWEET_RANDOM = 60 * 60 * 1000; // 60 minutes
 
 const traQConfiguration = new TraQConfiguration({
   accessToken: TOKEN,
@@ -151,15 +153,41 @@ function talk(
 
 const cron = require("node-cron");
 
+interface Channel {
+  id: string;
+  channelId: string;
+}
+
+interface GetChannelsResponse {
+  channels: Channel[];
+}
+
 module.exports = (robot) => {
   // 起動時
   // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
   cron.schedule(TWEET_MINUTE + " */1 * * *", () => {
-    if (Math.random() < TWEET_PROBABILITY) {
-      talk(false, "", robot);
-    }
+    console.log("schedule");
+    axios
+      .get<GetChannelsResponse>(CHANNELS_URL + "api/channels", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        console.log("channels");
+        res.data.channels.forEach((c) => {
+          console.log(c.channelId);
+          if (Math.random() < TWEET_PROBABILITY) {
+            setInterval(() => {
+              talk(false, "", robot, {
+                message: { channelID: c.channelId },
+                reply: null,
+                send: null,
+              });
+            }, Math.random() * TWEET_RANDOM);
+          }
+        });
+      });
   });
 
   robot.respond(/.*/, (res) => {
