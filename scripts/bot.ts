@@ -227,7 +227,8 @@ module.exports = (robot) => {
       /(おいす[ー～]?|\/?join)$/i.test(plainText) ||
       /\/?leave$/i.test(plainText) ||
       /(たすけて|help)$/i.test(plainText) ||
-      /\/?freq$/i.test(plainText)
+      /\/?freq$/i.test(plainText) ||
+      /\/?freq (.+)/i.test(plainText)
     ) {
       return;
     }
