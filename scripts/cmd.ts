@@ -35,23 +35,6 @@ const debugChannelId = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
 //   });
 // });
 
-const frequency = 5;
-pool.getConnection().then((conn) => {
-  const query = "SELECT * FROM channels WHERE channel_id = ?";
-  conn.query<Channel[]>(query, [debugChannelId]).then((rows) => {
-    if (rows.length < 1) {
-      return;
-    }
-    const channel = rows[0];
-    const query = "UPDATE channels SET frequency = ? WHERE channel_id = ?";
-    conn.query(query, [frequency, debugChannelId]).then((_) => {
-      setTimeout(() => {
-        console.log(`${frequency} 時間に一回くらいつぶやくね たぶん`);
-      }, REPLY_DELAY);
-    });
-  });
-});
-
 module.exports = (robot) => {
   robot.respond(/(おいす[ー～]?|\/?join)$/i, async (res) => {
     const { message } = res.message;
