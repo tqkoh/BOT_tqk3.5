@@ -12,7 +12,6 @@ const TYPING_INTERVAL = 3000;
 const MAX_REPLIES = 3;
 const CONTEXT_LENGTH = 2;
 const MAX_CHANNEL_MESSAGE_LENGTH = 50;
-const TWEET_PROBABILITY = 1.0; // 0.2
 
 // ShowcaseにHUBOT_TRAQ_ACCESS_TOKENという名前で保存した環境変数を取得する
 const BOT_USER_ID = "8996bb1d-31c6-472c-a99f-ee06e3728fe2";
@@ -93,7 +92,9 @@ function talk(
             .replace(/\{% time %\}/, timeString)
             .replace(
               /\{% text %\}/,
-              mention ? plainText : res.data.tweetQuestion
+              mention
+                ? plainText.replace(/!\{.*?\}/g, "")
+                : res.data.tweetQuestion
             );
           res.data.prompt.push(res.data.lastMessage);
 
@@ -186,7 +187,7 @@ const cron = require("node-cron");
 
 module.exports = (robot) => {
   // 起動時
-  robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
+  // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
   cron.schedule(TWEET_MINUTE + " */1 * * *", () => {

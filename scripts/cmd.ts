@@ -6,7 +6,6 @@ import { Channel, pool } from "./db";
 const BOT_ID = process.env.HUBOT_TRAQ_BOT_ID;
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
 const SUB_CHANNEL_ID = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
-const CHANNELS_URL = process.env.CHANNELS_URL;
 const REPLY_DELAY = 500;
 const traQConfiguration = new TraQConfiguration({
   accessToken: TOKEN,
