@@ -15,13 +15,24 @@ const traq = new Apis(traQConfiguration); // api.hoge()でtraQのAPIが使える
 
 const readme = readFileSync("readme.md", "utf-8");
 
+interface Count {
+  count: number;
+}
+
 // const debugChannelId = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
 // pool.getConnection().then((conn) => {
-//   const query = "DELETE FROM channels WHERE channel_id = ?";
-//   conn.query(query, [debugChannelId]).then((_) => {
-//     console.log("kan");
+//   const countQuery =
+//     "SELECT COUNT(*) AS count FROM channels WHERE channel_id = ?";
+//   conn.query<Count[]>(countQuery, [debugChannelId]).then((rows) => {
+//     if (rows[0].count > 0) {
+//       console.log("sude");
+//       return;
+//     }
+//     const query = "INSERT INTO channels (channel_id) VALUES (?)";
+//     conn.query(query, [debugChannelId]).then((_) => {
+//       console.log("oisu");
+//     });
 //   });
-//   conn.release();
 // });
 
 module.exports = (robot) => {
@@ -35,12 +46,23 @@ module.exports = (robot) => {
 
     res.send({ type: "stamp", name: "loading" });
     pool.getConnection().then((conn) => {
-      const query = "INSERT INTO channels (channel_id) VALUES (?)";
-      conn.query(query, [channelId]).then((_) => {
-        res.send({ type: "stamp", name: "kan" });
-        setTimeout(() => {
-          res.reply("おいす");
-        }, REPLY_DELAY);
+      const countQuery =
+        "SELECT COUNT(*) AS count FROM channels WHERE channel_id = ?";
+      conn.query<Count[]>(countQuery, [channelId]).then((rows) => {
+        if (rows[0].count > 0) {
+          res.send({ type: "stamp", name: "ayase_howaaa" });
+          setTimeout(() => {
+            res.reply("すでに参加してるよ");
+          }, REPLY_DELAY);
+          return;
+        }
+        const query = "INSERT INTO channels (channel_id) VALUES (?)";
+        conn.query(query, [channelId]).then((_) => {
+          res.send({ type: "stamp", name: "kan" });
+          setTimeout(() => {
+            res.reply("おいす");
+          }, REPLY_DELAY);
+        });
       });
     });
   });
@@ -50,12 +72,24 @@ module.exports = (robot) => {
 
     res.send({ type: "stamp", name: "loading" });
     pool.getConnection().then((conn) => {
-      const query = "DELETE FROM channels WHERE channel_id = ?";
-      conn.query(query, [channelId]).then((_) => {
-        res.send({ type: "stamp", name: "kan" });
-        setTimeout(() => {
-          res.reply(":wave:");
-        }, REPLY_DELAY);
+      const countQuery =
+        "SELECT COUNT(*) AS count FROM channels WHERE channel_id = ?";
+      conn.query<Count[]>(countQuery, [channelId]).then((rows) => {
+        if (rows[0].count < 1) {
+          res.send({ type: "stamp", name: "eyes_komatta" });
+          setTimeout(() => {
+            res.reply("もともと参加して内部");
+          }, REPLY_DELAY);
+          return;
+        }
+
+        const query = "DELETE FROM channels WHERE channel_id = ?";
+        conn.query(query, [channelId]).then((_) => {
+          res.send({ type: "stamp", name: "kan" });
+          setTimeout(() => {
+            res.reply(":wave:");
+          }, REPLY_DELAY);
+        });
       });
     });
   });

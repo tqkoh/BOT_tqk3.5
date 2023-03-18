@@ -156,7 +156,7 @@ const cron = require("node-cron");
 
 interface Channel {
   id: string;
-  channelId: string;
+  channel_id: string;
 }
 
 interface GetChannelsResponse {
@@ -172,14 +172,14 @@ module.exports = (robot) => {
     console.log("schedule");
     pool.getConnection().then((conn) => {
       const query = "SELECT * FROM `channels`";
-      conn.query<GetChannelsResponse>(query).then((rows) => {
+      conn.query<Channel[]>(query).then((rows) => {
         console.log("channels");
-        rows.channels.forEach((c) => {
-          console.log(c.channelId);
+        rows.forEach((c) => {
+          console.log(c.channel_id);
           if (Math.random() < TWEET_PROBABILITY) {
-            setInterval(() => {
+            setTimeout(() => {
               talk(false, "", robot, {
-                message: { channelID: c.channelId },
+                message: { channelID: c.channel_id },
                 reply: null,
                 send: null,
               });
