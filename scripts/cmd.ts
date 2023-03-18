@@ -13,7 +13,7 @@ const traQConfiguration = new TraQConfiguration({
 });
 const traq = new Apis(traQConfiguration); // api.hoge()でtraQのAPIが使える
 
-const help = readFileSync("help.md", "utf-8");
+const help = readFileSync("docs/help.md", "utf-8");
 
 interface Count {
   count: number;
