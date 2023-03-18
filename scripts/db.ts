@@ -7,3 +7,9 @@ export const pool = mariadb.createPool({
   database: process.env.MARIADB_DATABASE,
   connectionLimit: 5,
 });
+
+export interface Channel {
+  id: string;
+  frequency: number;
+  channel_id: string;
+}
