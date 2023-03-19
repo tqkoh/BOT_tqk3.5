@@ -60,7 +60,7 @@ module.exports = (robot) => {
         conn.query(query, [5, channelId]).then((_) => {
           res.send({ type: "stamp", name: "kan" });
           setTimeout(() => {
-            res.reply("おいす");
+            res.reply("おいす\nヘルプは `@BOT_tqk たすけて` で見れるよ");
           }, REPLY_DELAY);
         });
       });
