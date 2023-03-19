@@ -143,7 +143,7 @@ module.exports = (robot) => {
       const query = "SELECT * FROM channels WHERE channel_id = ?";
       conn.query<Channel[]>(query, [channelId]).then((rows) => {
         if (rows.length < 1) {
-          console.log(`参加してないよ2`);
+          res.reply(`参加してないよ`);
           return;
         }
         const channel = rows[0];
