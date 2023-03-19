@@ -101,18 +101,14 @@ module.exports = (robot) => {
     );
     pool.getConnection().then((conn) => {
       const query = "SELECT * FROM channels WHERE channel_id = ?";
-      conn
-        .query<Channel[]>(query, [channelId])
-        .then((rows) => {
-          if (rows.length < 1) {
-            return;
-          }
-          const channel = rows[0];
-          res.reply(`いまは ${channel.frequency} 時間に一回くらいしゃべるよ`);
-        })
-        .catch((err) => {
+      conn.query<Channel[]>(query, [channelId]).then((rows) => {
+        if (rows.length < 1) {
           res.reply(`参加してないよ`);
-        });
+          return;
+        }
+        const channel = rows[0];
+        res.reply(`いまは ${channel.frequency} 時間に一回くらいしゃべるよ`);
+      });
     });
   });
   robot.respond(/\/?freq (.+)/i, async (res) => {
@@ -151,7 +147,11 @@ module.exports = (robot) => {
         }
         const channel = rows[0];
         const query = "UPDATE channels SET frequency = ? WHERE channel_id = ?";
-        conn.query(query, [frequency, channelId]).then((_) => {
+        conn.query(query, [frequency, channelId]).then((u) => {
+          if (u.changedRows < 1) {
+            res.reply(`参加してないよ`);
+            return;
+          }
           res.send({ type: "stamp", name: "kan" });
           setTimeout(() => {
             res.reply(`${frequency} 時間に一回くらいつぶやくね たぶん`);
