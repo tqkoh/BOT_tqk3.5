@@ -217,6 +217,7 @@ module.exports = (robot) => {
           }
         });
       });
+      conn.release();
     });
   });
 
