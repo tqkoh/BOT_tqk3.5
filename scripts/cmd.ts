@@ -99,16 +99,21 @@ module.exports = (robot) => {
     res.reply(
       "\n- `@BOT_tqk /freq {n}`: {n} (1 以上) 時間に一回くらいしゃべるようにします デフォルトは 5"
     );
-    pool.getConnection().then((conn) => {
-      const query = "SELECT * FROM channels WHERE channel_id = ?";
-      conn.query<Channel[]>(query, [channelId]).then((rows) => {
-        if (rows.length < 1) {
-          return;
-        }
-        const channel = rows[0];
-        res.reply(`いまは ${channel.frequency} 時間に一回くらいしゃべるよ`);
+    pool
+      .getConnection()
+      .then((conn) => {
+        const query = "SELECT * FROM channels WHERE channel_id = ?";
+        conn.query<Channel[]>(query, [channelId]).then((rows) => {
+          if (rows.length < 1) {
+            return;
+          }
+          const channel = rows[0];
+          res.reply(`いまは ${channel.frequency} 時間に一回くらいしゃべるよ`);
+        });
+      })
+      .catch((err) => {
+        res.reply(`参加してないよ`);
       });
-    });
   });
   robot.respond(/\/?freq (.+)/i, async (res) => {
     const { message } = res.message;
