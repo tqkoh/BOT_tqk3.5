@@ -41,6 +41,36 @@ module.exports = (robot) => {
     res.send({ type: "stamp", name: "ganbare-" });
   });
   robot.hear(/いい?$/, async (res) => {
-    res.send({ type: "stamp", name: "ganbare-" });
+    res.send({ type: "stamp", name: "iiyp" });
+  });
+  robot.hear(
+    /^(おはよ.*|おは|ご|ごらげ|おはすた|おはござ|おきくらげ|おき|:ohagoza:|:ohasta:|:ohao:|:go:)$/,
+    async (res) => {
+      res.send({ type: "stamp", name: "go" });
+    }
+  );
+  robot.hear(
+    /^(寝る.?|ねる.?|ねぶ|ねぬ゛|ねま.?|:oyasumi:|:ayase_oyasumi:)$/,
+    async (res) => {
+      res.send({ type: "stamp", name: "ayase_oyasumi" });
+    }
+  );
+  robot.hear(/tqk/i, async (res) => {
+    res.send({ type: "stamp", name: "eye_chuukunn" });
+    setTimeout(() => {
+      res.send({ type: "stamp", name: "ayase_eye2" });
+    });
+  });
+  robot.hear(/(ぶ|部|ぬ゛)/, async (res) => {
+    const buOrNu = res.match[1];
+    if (
+      /ん部|んぶ|内部|若乱舞|帰宅部|.飯部|ねぶ|寝部|疲れ部|つかれぶ/.test(
+        buOrNu
+      )
+    ) {
+      res.send({ type: "stamp", name: "bu" });
+    } else {
+      res.send({ type: "stamp", name: "flag_nu" });
+    }
   });
 };
