@@ -124,10 +124,17 @@ function talk(
             })
             .then((completion) => {
               console.log("completion");
+              let inCodeBlock = false;
               let replies: string[] = completion.data.choices[0].message.content
                 .split("\n")
                 .reduce((acc, c) => {
-                  if (c !== "") {
+                  if (c.startsWith("```")) {
+                    inCodeBlock = !inCodeBlock;
+                  }
+                  if (inCodeBlock) {
+                    acc[acc.length - 1] +=
+                      "\n" + c.replace(TQK_DUMMY, TQK_NAME);
+                  } else if (c !== "") {
                     acc.push(c.replace(TQK_DUMMY, TQK_NAME));
                   }
                   return acc;
@@ -152,6 +159,19 @@ function talk(
                     );
                   }
                 }, TYPING_INTERVAL * i);
+              }
+            })
+            .catch((err) => {
+              const reply = "たぶんクエリが長すぎる";
+              if (messageRes.reply !== null && messageRes.send !== null) {
+                messageRes.reply(reply);
+              } else if (robot !== null) {
+                robot.send(
+                  {
+                    channelID: messageRes.message.channelID || HOME_CHANNEL_ID,
+                  },
+                  reply
+                );
               }
             });
         });
