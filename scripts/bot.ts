@@ -162,9 +162,10 @@ function talk(
               }
             })
             .catch((err) => {
-              const reply = "たぶんクエリが長すぎる";
+              const reply = "だめでした";
               if (messageRes.reply !== null && messageRes.send !== null) {
                 messageRes.reply(reply);
+                messageRes.send({ type: "stamp", stamp: "dead_crewmate" });
               } else if (robot !== null) {
                 robot.send(
                   {
