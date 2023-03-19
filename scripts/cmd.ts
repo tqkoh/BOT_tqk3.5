@@ -64,6 +64,7 @@ module.exports = (robot) => {
           }, REPLY_DELAY);
         });
       });
+      conn.release();
     });
   });
   robot.respond(/\/?leave$/i, async (res) => {
@@ -91,6 +92,7 @@ module.exports = (robot) => {
           }, REPLY_DELAY);
         });
       });
+      conn.release();
     });
   });
   robot.respond(/\/?freq$/i, async (res) => {
@@ -99,17 +101,30 @@ module.exports = (robot) => {
     res.reply(
       "\n- `@BOT_tqk /freq {n}`: {n} (1 以上) 時間に一回くらいしゃべるようにします デフォルトは 5"
     );
-    pool.getConnection().then((conn) => {
-      const query = "SELECT * FROM channels WHERE channel_id = ?";
-      conn.query<Channel[]>(query, [channelId]).then((rows) => {
-        if (rows.length < 1) {
-          res.reply(`参加してないよ`);
-          return;
-        }
-        const channel = rows[0];
-        res.reply(`いまは ${channel.frequency} 時間に一回くらいしゃべるよ`);
+    pool
+      .getConnection()
+      .then((conn) => {
+        const query = "SELECT * FROM channels WHERE channel_id = ?";
+        conn
+          .query<Channel[]>(query, [channelId])
+          .then((rows) => {
+            if (rows.length < 1) {
+              res.reply(`参加してないよ`);
+              return;
+            }
+            const channel = rows[0];
+            res.reply(`いまは ${channel.frequency} 時間に一回くらいしゃべるよ`);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.reply("アレ 失敗した");
+          });
+        conn.release();
+      })
+      .catch((err) => {
+        console.log(err);
+        res.reply("アレ 失敗した");
       });
-    });
   });
   robot.respond(/\/?freq (.+)/i, async (res) => {
     const { message } = res.message;
@@ -139,23 +154,38 @@ module.exports = (robot) => {
     }
 
     res.send({ type: "stamp", name: "loading" });
-    pool.getConnection().then((conn) => {
-      const query = "SELECT * FROM channels WHERE channel_id = ?";
-      conn.query<Channel[]>(query, [channelId]).then((rows) => {
-        if (rows.length < 1) {
-          res.reply(`参加してないよ`);
-          return;
-        }
-        const channel = rows[0];
-        const query = "UPDATE channels SET frequency = ? WHERE channel_id = ?";
-        conn.query(query, [frequency, channelId]).then((_) => {
-          res.send({ type: "stamp", name: "kan" });
-          setTimeout(() => {
-            res.reply(`${frequency} 時間に一回くらいつぶやくね たぶん`);
-          }, REPLY_DELAY);
-        });
+    pool
+      .getConnection()
+      .then((conn) => {
+        const query = "SELECT * FROM channels WHERE channel_id = ?";
+        conn
+          .query<Channel[]>(query, [channelId])
+          .then((rows) => {
+            if (rows.length < 1) {
+              res.reply(`参加してないよ`);
+              return;
+            }
+            const channel = rows[0];
+            const query =
+              "UPDATE channels SET frequency = ? WHERE channel_id = ?";
+            conn.query(query, [frequency, channelId]).then((_) => {
+              res.send({ type: "stamp", name: "kan" });
+              setTimeout(() => {
+                res.reply(`${frequency} 時間に一回くらいつぶやくね たぶん`);
+              }, REPLY_DELAY);
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.reply("アレ 失敗した");
+          });
+        conn.release();
+      })
+      .catch((err) => {
+        console.log(err);
+        res.reply("アレ 失敗した\n");
+        // robot.send({ channelID: SUB_CHANNEL_ID }, err);
       });
-    });
   });
   robot.respond(/(たすけて|\/?help)$/i, async (res) => {
     const { message } = res.message;
