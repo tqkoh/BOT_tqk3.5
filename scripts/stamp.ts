@@ -63,7 +63,11 @@ module.exports = (robot) => {
   });
   robot.hear(/(ぶ|部|ぬ゛)/, async (res) => {
     const buOrNu = res.match[1];
-    if (/ん部|んぶ|内部|若乱舞|帰宅部|.飯部/.test(buOrNu)) {
+    if (
+      /ん部|んぶ|内部|若乱舞|帰宅部|.飯部|ねぶ|寝部|疲れ部|つかれぶ/.test(
+        buOrNu
+      )
+    ) {
       res.send({ type: "stamp", name: "bu" });
     } else {
       res.send({ type: "stamp", name: "flag_nu" });
