@@ -152,6 +152,11 @@ module.exports = (robot) => {
       res.reply("やだ");
       return;
     }
+    if (frequency >= 998244353) {
+      res.send({ type: "stamp", name: "wakaru2" });
+      res.reply("デカすぎんだろ");
+      return;
+    }
 
     res.send({ type: "stamp", name: "loading" });
     pool
