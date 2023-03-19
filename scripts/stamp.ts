@@ -80,7 +80,7 @@ module.exports = (robot) => {
       res.send({ type: "stamp", name: "ayase_eye2" });
     });
   });
-  robot.hear(/(ぶ|部|ぬ゛)/, async (res) => {
+  robot.hear(/(.*(ぶ|部|ぬ゛).*)/, async (res) => {
     const buOrNu = res.match[1];
     if (
       /[ンんね寝][部ぶぬ゛]|内部|若乱舞|帰宅部|.飯部|疲れ部|つかれぶ/.test(

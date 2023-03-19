@@ -5,7 +5,7 @@ export const pool = mariadb.createPool({
   user: process.env.MARIADB_USERNAME,
   password: process.env.MARIADB_PASSWORD,
   database: process.env.MARIADB_DATABASE,
-  connectionLimit: 2, // 5
+  connectionLimit: 5,
 });
 
 export interface Channel {
