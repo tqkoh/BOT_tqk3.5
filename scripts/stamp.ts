@@ -43,6 +43,9 @@ module.exports = (robot) => {
   robot.hear(/いい\?$/, async (res) => {
     res.send({ type: "stamp", name: "iiyp" });
   });
+  robot.hear(/(いいですか.|ok\?|ok？)$/, async (res) => {
+    res.send({ type: "stamp", name: "okk" });
+  });
   robot.hear(
     /^(おはよ.*|おは|ご|ごらげ|おはすた|おはござ|おきくらげ|おき|:ohagoza:|:ohasta:|:ohao:|:go:)$/,
     async (res) => {
@@ -55,7 +58,23 @@ module.exports = (robot) => {
       res.send({ type: "stamp", name: "ayase_oyasumi" });
     }
   );
-  robot.hear(/tqk/i, async (res) => {
+  robot.hear(/^tqk/i, async (res) => {
+    res.send({ type: "stamp", name: "ore" });
+  });
+  robot.hear(/(.tqk)/i, async (res) => {
+    const s = res.match[1];
+    if (s[0] === "_") return;
+    res.send({ type: "stamp", name: "ore" });
+  });
+  robot.hear(/^BOT_tqk/i, async (res) => {
+    res.send({ type: "stamp", name: "eye_chuukunn" });
+    setTimeout(() => {
+      res.send({ type: "stamp", name: "ayase_eye2" });
+    });
+  });
+  robot.hear(/(.BOT_tqk)/i, async (res) => {
+    const s = res.match[1];
+    if (s[0] === "@") return;
     res.send({ type: "stamp", name: "eye_chuukunn" });
     setTimeout(() => {
       res.send({ type: "stamp", name: "ayase_eye2" });
@@ -64,7 +83,7 @@ module.exports = (robot) => {
   robot.hear(/(ぶ|部|ぬ゛)/, async (res) => {
     const buOrNu = res.match[1];
     if (
-      /ん部|んぶ|内部|若乱舞|帰宅部|.飯部|ねぶ|寝部|疲れ部|つかれぶ/.test(
+      /[ンんね寝][部ぶぬ゛]|内部|若乱舞|帰宅部|.飯部|疲れ部|つかれぶ/.test(
         buOrNu
       )
     ) {
@@ -72,5 +91,19 @@ module.exports = (robot) => {
     } else {
       res.send({ type: "stamp", name: "flag_nu" });
     }
+  });
+  robot.hear(/わからん/, async (res) => {
+    res.send({ type: "stamp", name: "bu" });
+  });
+  robot.hear(/(できた|:kan:)$/, async (res) => {
+    res.send({ type: "stamp", name: "tada" });
+  });
+  robot.hear(/おいす$/, async (res) => {
+    res.send({ type: "stamp", name: "oisu-1" });
+    res.send({ type: "stamp", name: "oisu-2" });
+    res.send({ type: "stamp", name: "oisu-3" });
+  });
+  robot.hear(/:ayase_iyaa:|あやせいやあ/, async (res) => {
+    res.send({ type: "stamp", name: "ayase_iyaa" });
   });
 };
