@@ -1,5 +1,10 @@
 // traQのAPIを使いたい場合
-import { Apis, Configuration as TraQConfiguration } from "@traptitech/traq";
+import {
+  Apis,
+  PostBotActionJoinRequest,
+  PostBotActionLeaveRequest,
+  Configuration as TraQConfiguration,
+} from "@traptitech/traq";
 import { readFileSync } from "fs";
 import { Channel, pool } from "./db";
 
@@ -37,7 +42,7 @@ const debugChannelId = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
 module.exports = (robot) => {
   robot.respond(/(おいす[ー～]?|\/?join)$/i, async (res) => {
     const { message } = res.message;
-    const { channelId } = message;
+    const { channelId, id } = message;
     if (!channelId) {
       res.reply("チャンネルで使ってね");
       return;
@@ -58,7 +63,7 @@ module.exports = (robot) => {
         const query =
           "INSERT INTO channels (frequency, channel_id) VALUES (?, ?)";
         conn.query(query, [5, channelId]).then((_) => {
-          res.send({ type: "stamp", name: "kan" });
+          res.send({ type: "stamp", name: "loading" });
           setTimeout(() => {
             res.reply("おいす\nヘルプは `@BOT_tqk たすけて` で見れるよ");
           }, REPLY_DELAY);
@@ -66,10 +71,22 @@ module.exports = (robot) => {
       });
       conn.release();
     });
+
+    try {
+      await traq.letBotJoinChannel(BOT_ID, {
+        channelId,
+      } as PostBotActionJoinRequest);
+      res.send({ type: "stamp", name: "kan" });
+    } catch (err) {
+      robot.send(
+        { channelID: SUB_CHANNEL_ID },
+        `${err}\n//q.trap.jp/messages/${id}`
+      );
+    }
   });
   robot.respond(/\/?leave$/i, async (res) => {
     const { message } = res.message;
-    const { channelId } = message;
+    const { channelId, id } = message;
 
     res.send({ type: "stamp", name: "loading" });
     pool.getConnection().then((conn) => {
@@ -86,14 +103,26 @@ module.exports = (robot) => {
 
         const query = "DELETE FROM channels WHERE channel_id = ?";
         conn.query(query, [channelId]).then((_) => {
-          res.send({ type: "stamp", name: "kan" });
-          setTimeout(() => {
-            res.reply(":wave:");
-          }, REPLY_DELAY);
+          res.send({ type: "stamp", name: "loading" });
         });
       });
       conn.release();
     });
+
+    try {
+      await traq.letBotLeaveChannel(BOT_ID, {
+        channelId,
+      } as PostBotActionLeaveRequest);
+      res.send({ type: "stamp", name: "kan" });
+      setTimeout(() => {
+        res.reply(":wave:");
+      }, REPLY_DELAY);
+    } catch (err) {
+      robot.send(
+        { channelID: SUB_CHANNEL_ID },
+        `${err}\n//q.trap.jp/messages/${id}`
+      );
+    }
   });
   robot.respond(/\/?freq$/i, async (res) => {
     const { message } = res.message;
