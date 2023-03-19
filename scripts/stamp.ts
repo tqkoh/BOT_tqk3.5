@@ -40,7 +40,7 @@ module.exports = (robot) => {
   robot.hear(/(やる|やるぞ|する|するぞ)$/, async (res) => {
     res.send({ type: "stamp", name: "ganbare-" });
   });
-  robot.hear(/いい?$/, async (res) => {
+  robot.hear(/いい\?$/, async (res) => {
     res.send({ type: "stamp", name: "iiyp" });
   });
   robot.hear(
