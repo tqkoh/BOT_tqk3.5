@@ -97,7 +97,7 @@ module.exports = (robot) => {
     const { message } = res.message;
     const { channelId } = message;
     res.reply(
-      "\n- `@BOT_tqk /freq {n}`: n (>= 1) 時間に一回くらいしゃべるようにします デフォルトは 5"
+      "\n- `@BOT_tqk /freq {n}`: {n} (1 以上) 時間に一回くらいしゃべるようにします デフォルトは 5"
     );
     pool.getConnection().then((conn) => {
       const query = "SELECT * FROM channels WHERE channel_id = ?";
