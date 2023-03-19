@@ -207,7 +207,7 @@ const cron = require("node-cron");
 
 module.exports = (robot) => {
   // 起動時
-  // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
+  robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
   cron.schedule(TWEET_MINUTE + " */1 * * *", () => {
