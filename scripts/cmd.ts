@@ -121,6 +121,11 @@ module.exports = (robot) => {
       res.reply("整数を入れてね");
       return;
     }
+    if (isNaN(frequency)) {
+      res.send({ type: "stamp", name: "eyes_komatta" });
+      res.reply("整数を入れてね");
+      return;
+    }
     if (frequency < 0) {
       res.send({ type: "stamp", name: "eyes_komatta" });
       res.reply("1 以上の整数を入れてね");
