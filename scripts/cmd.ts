@@ -143,15 +143,12 @@ module.exports = (robot) => {
       const query = "SELECT * FROM channels WHERE channel_id = ?";
       conn.query<Channel[]>(query, [channelId]).then((rows) => {
         if (rows.length < 1) {
+          console.log(`参加してないよ2`);
           return;
         }
         const channel = rows[0];
         const query = "UPDATE channels SET frequency = ? WHERE channel_id = ?";
-        conn.query(query, [frequency, channelId]).then((u) => {
-          if (u.changedRows < 1) {
-            res.reply(`参加してないよ`);
-            return;
-          }
+        conn.query(query, [frequency, channelId]).then((_) => {
           res.send({ type: "stamp", name: "kan" });
           setTimeout(() => {
             res.reply(`${frequency} 時間に一回くらいつぶやくね たぶん`);
