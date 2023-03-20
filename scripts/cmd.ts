@@ -155,9 +155,13 @@ module.exports = (robot) => {
         res.reply("アレ 失敗した");
       });
   });
-  robot.respond(/\/?freq (.+)|\/?freq {(.+)}/i, async (res) => {
+  robot.respond(/\/?freq (.+)/i, async (res) => {
     const { message } = res.message;
     const { channelId } = message;
+    let match: string = res.match[1];
+    if (/\{(.+)\}/i.test(match)) {
+      match = match.replace(/\{(.+)\}/i, "$1");
+    }
     let frequency: number;
     try {
       frequency = parseInt(res.match[1]);
