@@ -164,7 +164,7 @@ module.exports = (robot) => {
     }
     let frequency: number;
     try {
-      frequency = parseInt(res.match[1]);
+      frequency = parseInt(match);
     } catch {
       res.send({ type: "stamp", name: "eyes_komatta" });
       res.reply("整数を入れてね");
