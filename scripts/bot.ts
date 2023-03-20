@@ -249,7 +249,7 @@ module.exports = (robot) => {
     if (
       /(おいす[ー～]?|\/?join)$/i.test(plainText) ||
       /\/?leave$/i.test(plainText) ||
-      /(たすけて|help)$/i.test(plainText) ||
+      /(おたすけ|たすけて|\/?help)$/i.test(plainText) ||
       /\/?freq$/i.test(plainText) ||
       /\/?freq (.+)/i.test(plainText)
     ) {

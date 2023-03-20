@@ -53,7 +53,7 @@ module.exports = (robot) => {
     }
   );
   robot.hear(
-    /^(寝る.?|ねる.?|ねぶ|ねぬ゛|ねま.?|:oyasumi:|:ayase_oyasumi:)$/,
+    /(寝る.?|ねる.?|ねぶ|ねぬ゛|ねま.?|:oyasumi:|:ayase_oyasumi:)$/,
     async (res) => {
       res.send({ type: "stamp", name: "ayase_oyasumi" });
     }
@@ -98,6 +98,9 @@ module.exports = (robot) => {
   robot.hear(/(できた|:kan:)$/, async (res) => {
     res.send({ type: "stamp", name: "tada" });
   });
+  robot.hear(/(うかな|っかな)$/, async (res) => {
+    res.send({ type: "stamp", name: "tanoshimi" });
+  });
   robot.hear(/おいす$/, async (res) => {
     res.send({ type: "stamp", name: "oisu-1" });
     res.send({ type: "stamp", name: "oisu-2" });
@@ -105,5 +108,8 @@ module.exports = (robot) => {
   });
   robot.hear(/:ayase_iyaa:|あやせいやあ/, async (res) => {
     res.send({ type: "stamp", name: "ayase_iyaa" });
+  });
+  robot.hear(/:ayase_howaaa:|あやせほわあ|traO/, async (res) => {
+    res.send({ type: "stamp", name: "ayase_howaaa" });
   });
 };
