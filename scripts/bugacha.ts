@@ -29,11 +29,14 @@ const BUGACHA_NAPOLIN_MESSAGE =
   "https://q.trap.jp/messages/49c4acce-d645-40a2-8bf3-23da6f99a81b";
 
 function napolin(res) {
+  const { message } = res.message;
+  const { channelId } = message;
   const payload: PostMessageRequest = {
     content: BUGACHA_NAPOLIN_DUMMY,
     embed: false,
   };
-  traq.postMessage(res.message.channelId, payload).then((res) => {
+  console.log("napolin", channelId);
+  traq.postMessage(channelId, payload).then((res) => {
     setTimeout(() => {
       const payload: PostMessageRequest = {
         content: BUGACHA_NAPOLIN_MESSAGE,
