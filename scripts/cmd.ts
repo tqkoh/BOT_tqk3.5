@@ -155,7 +155,7 @@ module.exports = (robot) => {
         res.reply("アレ 失敗した");
       });
   });
-  robot.respond(/\/?freq (.+)/i, async (res) => {
+  robot.respond(/\/?freq (.+)|\/?freq {(.+)}/i, async (res) => {
     const { message } = res.message;
     const { channelId } = message;
     let frequency: number;

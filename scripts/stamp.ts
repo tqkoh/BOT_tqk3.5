@@ -6,6 +6,7 @@ const BOT_ID = process.env.HUBOT_TRAQ_BOT_ID;
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
 const SUB_CHANNEL_ID = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
 const REPLY_DELAY = 500;
+
 const traQConfiguration = new TraQConfiguration({
   accessToken: TOKEN,
 });
@@ -111,5 +112,8 @@ module.exports = (robot) => {
   });
   robot.hear(/:ayase_howaaa:|あやせほわあ|traO/, async (res) => {
     res.send({ type: "stamp", name: "ayase_howaaa" });
+  });
+  robot.hear(/:erai:|えらい|偉い|えらすんぎ|鰓寸木/, async (res) => {
+    res.send({ type: "stamp", name: "erai" });
   });
 };
