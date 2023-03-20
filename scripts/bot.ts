@@ -162,9 +162,10 @@ function talk(
               }
             })
             .catch((err) => {
-              const reply = "たぶんクエリが長すぎる";
+              const reply = "だめでした";
               if (messageRes.reply !== null && messageRes.send !== null) {
                 messageRes.reply(reply);
+                messageRes.send({ type: "stamp", stamp: "dead_crewmate" });
               } else if (robot !== null) {
                 robot.send(
                   {
@@ -207,7 +208,7 @@ const cron = require("node-cron");
 
 module.exports = (robot) => {
   // 起動時
-  // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
+  robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
   console.log("ご");
 
   cron.schedule(TWEET_MINUTE + " */1 * * *", () => {
@@ -248,7 +249,7 @@ module.exports = (robot) => {
     if (
       /(おいす[ー～]?|\/?join)$/i.test(plainText) ||
       /\/?leave$/i.test(plainText) ||
-      /(たすけて|help)$/i.test(plainText) ||
+      /(おたすけ|たすけて|\/?help)$/i.test(plainText) ||
       /\/?freq$/i.test(plainText) ||
       /\/?freq (.+)/i.test(plainText)
     ) {

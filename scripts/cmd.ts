@@ -221,7 +221,7 @@ module.exports = (robot) => {
         // robot.send({ channelID: SUB_CHANNEL_ID }, err);
       });
   });
-  robot.respond(/(たすけて|\/?help)$/i, async (res) => {
+  robot.respond(/(おたすけ|たすけて|\/?help)$/i, async (res) => {
     const { message } = res.message;
     const { user } = message;
     if (user.bot) return;
