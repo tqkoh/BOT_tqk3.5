@@ -11,6 +11,7 @@ import {
   Configuration as OpenAIConfiguration,
 } from "openai";
 import { Channel, pool } from "./db";
+import { HearResult } from "./types";
 
 const TYPING_INTERVAL = 3000;
 const MAX_REPLIES = 3;
@@ -55,7 +56,9 @@ function talk(
   plainText = "",
   robot = null,
   messageRes = {
-    message: { channelID: HOME_CHANNEL_ID },
+    message: {
+      message: { channelId: HOME_CHANNEL_ID },
+    },
     reply: null,
     send: null,
   }
@@ -66,7 +69,7 @@ function talk(
     .then((res) => {
       console.log("prompt");
       traq
-        .getMessages(messageRes.message.channelID || HOME_CHANNEL_ID)
+        .getMessages(messageRes.message.message.channelId || HOME_CHANNEL_ID)
         .then((channelMessages) => {
           console.log("context");
           // context を入れる
@@ -157,7 +160,8 @@ function talk(
                     robot.send(
                       {
                         channelID:
-                          messageRes.message.channelID || HOME_CHANNEL_ID,
+                          messageRes.message.message.channelId ||
+                          HOME_CHANNEL_ID,
                       },
                       replies[i]
                     );
@@ -173,7 +177,8 @@ function talk(
               } else if (robot !== null) {
                 robot.send(
                   {
-                    channelID: messageRes.message.channelID || HOME_CHANNEL_ID,
+                    channelID:
+                      messageRes.message.message.channelId || HOME_CHANNEL_ID,
                   },
                   reply
                 );
@@ -238,7 +243,7 @@ module.exports = (robot) => {
             );
             setTimeout(() => {
               talk(false, "", robot, {
-                message: { channelID: c.channel_id },
+                message: { message: { channelId: c.channel_id } },
                 reply: null,
                 send: null,
               });
@@ -250,8 +255,9 @@ module.exports = (robot) => {
     });
   });
 
-  robot.respond(/.*/, (res) => {
+  robot.respond(/.*/, (r) => {
     console.log("respond");
+    const res: HearResult = r;
     const { message } = res.message;
     const { plainText, user } = message;
     if (
