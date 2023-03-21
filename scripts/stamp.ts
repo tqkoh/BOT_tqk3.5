@@ -1,6 +1,7 @@
 // traQのAPIを使いたい場合
 import { Apis, Configuration as TraQConfiguration } from "@traptitech/traq";
 import { readFileSync } from "fs";
+import { HearResult } from "./types";
 
 const BOT_ID = process.env.HUBOT_TRAQ_BOT_ID;
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
@@ -36,44 +37,45 @@ const debugChannelId = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
 
 module.exports = (robot) => {
   robot.hear(/腹痛/, async (res) => {
-    res.send({ type: "stamp", name: "odaijini" });
+    (res as HearResult).send({ type: "stamp", name: "odaijini" });
   });
   robot.hear(/(やる|やるぞ|する|するぞ)$/, async (res) => {
-    res.send({ type: "stamp", name: "ganbare-" });
+    (res as HearResult).send({ type: "stamp", name: "ganbare-" });
   });
   robot.hear(/いい\?$/, async (res) => {
-    res.send({ type: "stamp", name: "iiyp" });
+    (res as HearResult).send({ type: "stamp", name: "iiyp" });
   });
   robot.hear(/(いいですか.|ok\?|ok？)$/, async (res) => {
-    res.send({ type: "stamp", name: "okk" });
+    (res as HearResult).send({ type: "stamp", name: "okk" });
   });
   robot.hear(
     /^(おはよ.*|おは|ご|ごらげ|おはすた|おはござ|おきくらげ|おき|:ohagoza:|:ohasta:|:ohao:|:go:)$/,
     async (res) => {
-      res.send({ type: "stamp", name: "go" });
+      (res as HearResult).send({ type: "stamp", name: "go" });
     }
   );
   robot.hear(
     /(寝る.?|ねる.?|ねぶ|ねぬ゛|ねま.?|:oyasumi:|:ayase_oyasumi:)$/,
     async (res) => {
-      res.send({ type: "stamp", name: "ayase_oyasumi" });
+      (res as HearResult).send({ type: "stamp", name: "ayase_oyasumi" });
     }
   );
   robot.hear(/^tqk/i, async (res) => {
-    res.send({ type: "stamp", name: "ore" });
+    (res as HearResult).send({ type: "stamp", name: "ore" });
   });
   robot.hear(/(.tqk)/i, async (res) => {
     const s = res.match[1];
     if (s[0] === "_") return;
-    res.send({ type: "stamp", name: "ore" });
+    (res as HearResult).send({ type: "stamp", name: "ore" });
   });
   robot.hear(/^BOT_tqk/i, async (res) => {
-    res.send({ type: "stamp", name: "eye_chuukunn" });
+    (res as HearResult).send({ type: "stamp", name: "eye_chuukunn" });
     setTimeout(() => {
-      res.send({ type: "stamp", name: "ayase_eye2" });
+      (res as HearResult).send({ type: "stamp", name: "ayase_eye2" });
     });
   });
-  robot.hear(/(.BOT_tqk)/i, async (res) => {
+  robot.hear(/(.BOT_tqk)/i, async (r) => {
+    const res: HearResult = r;
     const s = res.match[1];
     if (s[0] === "@") return;
     res.send({ type: "stamp", name: "eye_chuukunn" });
@@ -81,7 +83,8 @@ module.exports = (robot) => {
       res.send({ type: "stamp", name: "ayase_eye2" });
     });
   });
-  robot.hear(/(.*(ぶ|部|ぬ゛).*)/, async (res) => {
+  robot.hear(/(.*(ぶ|部|ぬ゛).*)/, async (r) => {
+    const res: HearResult = r;
     const buOrNu = res.match[1];
     if (
       /[ンんね寝][部ぶぬ゛]|内部|若乱舞|帰宅部|.飯部|疲れ部|つかれぶ/.test(
@@ -94,26 +97,27 @@ module.exports = (robot) => {
     }
   });
   robot.hear(/わからん/, async (res) => {
-    res.send({ type: "stamp", name: "bu" });
+    (res as HearResult).send({ type: "stamp", name: "bu" });
   });
   robot.hear(/(できた|:kan:)$/, async (res) => {
-    res.send({ type: "stamp", name: "tada" });
+    (res as HearResult).send({ type: "stamp", name: "tada" });
   });
   robot.hear(/(うかな|っかな)$/, async (res) => {
-    res.send({ type: "stamp", name: "tanoshimi" });
+    (res as HearResult).send({ type: "stamp", name: "tanoshimi" });
   });
-  robot.hear(/おいす$/, async (res) => {
+  robot.hear(/おいす$/, async (r) => {
+    const res: HearResult = r;
     res.send({ type: "stamp", name: "oisu-1" });
     res.send({ type: "stamp", name: "oisu-2" });
     res.send({ type: "stamp", name: "oisu-3" });
   });
   robot.hear(/:ayase_iyaa:|あやせいやあ/, async (res) => {
-    res.send({ type: "stamp", name: "ayase_iyaa" });
+    (res as HearResult).send({ type: "stamp", name: "ayase_iyaa" });
   });
   robot.hear(/:ayase_howaaa:|あやせほわあ|traO/, async (res) => {
-    res.send({ type: "stamp", name: "ayase_howaaa" });
+    (res as HearResult).send({ type: "stamp", name: "ayase_howaaa" });
   });
   robot.hear(/:erai:|えらい|偉い|えらすんぎ|鰓寸木/, async (res) => {
-    res.send({ type: "stamp", name: "erai" });
+    (res as HearResult).send({ type: "stamp", name: "erai" });
   });
 };
