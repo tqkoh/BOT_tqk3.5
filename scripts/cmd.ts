@@ -7,6 +7,7 @@ import {
 } from "@traptitech/traq";
 import { readFileSync } from "fs";
 import { Channel, pool } from "./db";
+import { HearResult } from "./types";
 
 const BOT_ID = process.env.HUBOT_TRAQ_BOT_ID;
 const TOKEN = process.env.HUBOT_TRAQ_ACCESS_TOKEN;
@@ -40,7 +41,8 @@ const debugChannelId = "8c8172ca-8f7d-4204-b252-4e1e9b6f236b";
 // });
 
 module.exports = (robot) => {
-  robot.respond(/(おいす[ー～]?|\/?join)$/i, async (res) => {
+  robot.respond(/(おいす[ー～]?|\/?join)$/i, async (r) => {
+    const res: HearResult = r;
     const { message } = res.message;
     const { channelId, id } = message;
     if (!channelId) {
@@ -65,7 +67,7 @@ module.exports = (robot) => {
         conn.query(query, [5, channelId]).then((_) => {
           res.send({ type: "stamp", name: "loading" });
           setTimeout(() => {
-            res.reply("おいす\nヘルプは `@BOT_tqk たすけて` で見れるよ");
+            res.reply("おいす\nヘルプは `@BOT_tqk おたすけ` で見れるよ");
           }, REPLY_DELAY);
         });
       });
@@ -84,7 +86,8 @@ module.exports = (robot) => {
       );
     }
   });
-  robot.respond(/\/?leave$/i, async (res) => {
+  robot.respond(/\/?leave$/i, async (r) => {
+    const res: HearResult = r;
     const { message } = res.message;
     const { channelId, id } = message;
 
@@ -124,7 +127,8 @@ module.exports = (robot) => {
       );
     }
   });
-  robot.respond(/\/?freq$/i, async (res) => {
+  robot.respond(/\/?freq$/i, async (r) => {
+    const res: HearResult = r;
     const { message } = res.message;
     const { channelId } = message;
     res.reply(
@@ -155,7 +159,8 @@ module.exports = (robot) => {
         res.reply("アレ 失敗した");
       });
   });
-  robot.respond(/\/?freq (.+)/i, async (res) => {
+  robot.respond(/\/?freq (.+)/i, async (r) => {
+    const res: HearResult = r;
     const { message } = res.message;
     const { channelId } = message;
     let match: string = res.match[1];
@@ -225,7 +230,8 @@ module.exports = (robot) => {
         // robot.send({ channelID: SUB_CHANNEL_ID }, err);
       });
   });
-  robot.respond(/(おたすけ|たすけて|\/?help)$/i, async (res) => {
+  robot.respond(/(おたすけ|たすけて|\/?help)$/i, async (r) => {
+    const res: HearResult = r;
     const { message } = res.message;
     const { user } = message;
     if (user.bot) return;
