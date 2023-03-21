@@ -1,9 +1,5 @@
 // traQのAPIを使いたい場合
-import {
-  Apis,
-  PostMessageRequest,
-  Configuration as TraQConfiguration,
-} from "@traptitech/traq";
+import { Apis, Configuration as TraQConfiguration } from "@traptitech/traq";
 import axios from "axios";
 import {
   ChatCompletionRequestMessage,
@@ -217,11 +213,10 @@ const cron = require("node-cron");
 
 module.exports = (robot) => {
   // 起動時
-  // robot.send({ channelID: HOME_CHANNEL_ID }, "ご");
-  traq.postMessage(HOME_CHANNEL_ID, {
-    content: "@tqk ご",
-    embeds: true,
-  } as PostMessageRequest);
+  robot.send(
+    { channelID: HOME_CHANNEL_ID },
+    `!{"type":"user","raw":"@tqk","id":"ac91c44c-3a83-4f28-b739-27d81222468a"} ご`
+  );
   console.log("@tqk ご 起動しました");
 
   cron.schedule(TWEET_MINUTE + " */1 * * *", () => {
