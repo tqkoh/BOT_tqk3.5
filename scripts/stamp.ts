@@ -86,8 +86,11 @@ module.exports = (robot) => {
   robot.hear(/(.*(ぶ|部|ぬ゛).*)/, async (r) => {
     const res: HearResult = r;
     const buOrNu = res.match[1];
+    if (/全部|一部|部分|学部|幹部|部門/.test(buOrNu)) {
+      return;
+    }
     if (
-      /[ンんね寝][部ぶぬ゛]|内部|若乱舞|帰宅部|.飯部|疲れ部|つかれぶ/.test(
+      /[ンんね寝](部|ぶ|ぬ゛|:bu:)|死部|内部|若乱舞|帰宅部|.飯部|疲れ部|(つかれ|ほかる)(部|ぶ|ぬ゛|:bu:)/.test(
         buOrNu
       )
     ) {
