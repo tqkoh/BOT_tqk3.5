@@ -13,6 +13,7 @@ const TYPING_INTERVAL = 3000;
 const MAX_REPLIES = 3;
 const CONTEXT_LENGTH = 2;
 const MAX_CHANNEL_MESSAGE_LENGTH = 50;
+const JOMEI = process.env.JOMEI;
 
 // ShowcaseにHUBOT_TRAQ_ACCESS_TOKENという名前で保存した環境変数を取得する
 const BOT_USER_ID = "8996bb1d-31c6-472c-a99f-ee06e3728fe2";
@@ -168,16 +169,20 @@ function talk(
             .catch((err) => {
               const reply = "だめでした";
               if (messageRes.reply !== null && messageRes.send !== null) {
-                messageRes.reply(reply);
+                if (!JOMEI) {
+                  messageRes.reply(reply);
+                }
                 messageRes.send({ type: "stamp", stamp: "dead_crewmate" });
               } else if (robot !== null) {
-                robot.send(
-                  {
-                    channelID:
-                      messageRes.message.message.channelId || HOME_CHANNEL_ID,
-                  },
-                  reply
-                );
+                if (!JOMEI) {
+                  robot.send(
+                    {
+                      channelID:
+                        messageRes.message.message.channelId || HOME_CHANNEL_ID,
+                    },
+                    reply
+                  );
+                }
               }
             });
         });
